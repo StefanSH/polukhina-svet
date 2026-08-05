@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>АЛИСА ПОЛУХИНА — свет и пространство</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050506;
+  --bg2:#0E0E12;
+  --warm:#FFB35C;
+  --cool:#B8D8FF;
+  --laser:#FF3B4E;
+  --text:#EDEAE4;
+  --accent:var(--warm);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text);font-family:'Unbounded',system-ui,sans-serif;overflow-x:hidden}
+body{cursor:none}
+a{color:inherit}
+
+/* ---------- курсор-фонарь ---------- */
+#torch{position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:screen;
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,179,92,.13), rgba(255,179,92,.04) 45%, transparent 70%);
+  transition:opacity .6s}
+#dot{position:fixed;z-index:61;width:6px;height:6px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 12px 3px var(--accent);pointer-events:none;transform:translate(-50%,-50%);left:50%;top:50%;transition:width .2s,height .2s}
+#dot.big{width:26px;height:26px;opacity:.75}
+
+/* ---------- прелоадер ---------- */
+#pre{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;transition:opacity .9s}
+#preBar{width:min(46vw,460px);height:2px;background:#141414;position:relative;overflow:hidden}
+#preFill{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--warm);box-shadow:0 0 18px 2px var(--warm)}
+#preTxt{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;color:#5a5a5a}
+#pre.gone{opacity:0;pointer-events:none}
+
+/* ---------- шапка ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:22px 30px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;mix-blend-mode:difference}
+#lang span{cursor:none;opacity:.35;padding:0 3px}
+#lang span.on{opacity:1}
+#lang b{opacity:.2;font-weight:300}
+
+/* ---------- секции ---------- */
+section{position:relative;z-index:10}
+.pad{padding:0 clamp(24px,7vw,110px)}
+
+/* интро */
+#intro{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+#name{font-size:clamp(38px,9.5vw,150px);font-weight:200;letter-spacing:.02em;line-height:.95;color:transparent;
+  background-image:radial-gradient(330px circle at var(--mx,50%) var(--my,50%), #FFF6E8 0%, #FFD9A0 18%, var(--warm) 34%, rgba(237,234,228,.14) 60%, rgba(237,234,228,.045) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  text-shadow:0 0 60px rgba(255,179,92,.10)}
+#tag{margin-top:34px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.26em;color:#6d6a66;opacity:0;transition:opacity 1.4s}
+#tag.show{opacity:1}
+#scrollHint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.3em;color:#3e3c39;animation:bob 2.6s infinite ease-in-out}
+@keyframes bob{0%,100%{transform:translate(-50%,0);opacity:.4}50%{transform:translate(-50%,7px);opacity:.9}}
+
+/* профиль */
+#profile{min-height:92vh;display:flex;flex-direction:column;justify-content:center;gap:60px;background:linear-gradient(#050506,#0E0E12)}
+#lead{font-size:clamp(19px,2.5vw,34px);font-weight:200;line-height:1.5;max-width:19em}
+#lead em{font-style:normal;color:var(--warm)}
+.stats{display:flex;flex-wrap:wrap;gap:clamp(30px,7vw,90px)}
+.stat .n{font-size:clamp(40px,6vw,84px);font-weight:200;color:var(--warm);line-height:1}
+.stat .c{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;color:#77736e;margin-top:12px;max-width:12em}
+
+/* комната */
+#room{height:210vh;background:#0E0E12}
+#roomSticky{position:sticky;top:0;height:100vh}
+#c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
+#roomLabel{position:absolute;top:96px;left:clamp(24px,7vw,110px);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.26em;color:#6d6a66;z-index:3}
+#roomHelp{position:absolute;bottom:34px;left:clamp(24px,7vw,110px);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:#4a4845;z-index:3}
+
+/* диммер */
+#dimmer{position:absolute;right:clamp(20px,4vw,54px);top:50%;transform:translateY(-50%);z-index:5;
+  display:flex;flex-direction:column;align-items:center;gap:12px}
+#track{width:34px;height:min(300px,38vh);border:1px solid #24242a;border-radius:18px;position:relative;background:#08080a;overflow:hidden}
+#fill{position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(0deg,rgba(255,179,92,.85),rgba(184,216,255,.85))}
+#knob{position:absolute;left:3px;right:3px;height:16px;bottom:calc(55% - 8px);border-radius:10px;background:#EDEAE4;box-shadow:0 0 16px 3px rgba(255,255,255,.35)}
+#kelvin{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#7d7a75}
+
+/* панель проекта */
+#panel{position:absolute;right:0;top:0;bottom:0;width:min(430px,88vw);background:rgba(6,6,8,.93);backdrop-filter:blur(14px);
+  border-left:1px solid #1d1d22;padding:128px 34px 48px;z-index:8;transform:translateX(103%);transition:transform .7s cubic-bezier(.2,.8,.2,1);overflow-y:auto}
+#panel.open{transform:none}
+#pNum{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;color:var(--warm)}
+#pTitle{font-size:27px;font-weight:200;margin:16px 0 20px;line-height:1.2}
+#pText{font-size:14px;line-height:1.75;color:#a5a19b;font-weight:200}
+#pMeta{margin-top:26px;border-top:1px solid #1d1d22;padding-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#6d6a66;line-height:2.1;letter-spacing:.06em}
+#pClose{position:absolute;top:70px;right:30px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;color:#6d6a66;cursor:none}
+
+/* мастерская */
+#shop{min-height:88vh;display:flex;flex-direction:column;justify-content:center;gap:44px;
+  background:#0E0E12;background-image:linear-gradient(#15151b 1px,transparent 1px),linear-gradient(90deg,#15151b 1px,transparent 1px);background-size:34px 34px}
+#shopTitle{font-size:clamp(24px,4.4vw,58px);font-weight:200;line-height:1.25;max-width:15em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:#1d1d22;border:1px solid #1d1d22}
+.cell{background:#0B0B0F;padding:26px 22px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;transition:background .4s}
+.cell:hover{background:#121218}
+.cell .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;color:var(--warm)}
+.cell .v{font-size:14px;font-weight:200;line-height:1.6;color:#a5a19b}
+
+/* контакты */
+#contact{height:100vh;display:flex;flex-direction:column;justify-content:center;gap:26px;background:#000}
+#cTitle{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;color:#4a4845}
+.cline{font-size:clamp(21px,3.4vw,42px);font-weight:200;color:#2a2825;transition:color .5s,text-shadow .5s;text-decoration:none;width:fit-content}
+.cline:hover{color:var(--warm);text-shadow:0 0 34px rgba(255,179,92,.55)}
+#back{margin-top:40px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;color:#6d6a66;
+  border:1px solid #22221f;padding:14px 24px;width:fit-content;cursor:none;transition:.4s}
+#back:hover{color:var(--warm);border-color:var(--warm);box-shadow:0 0 28px rgba(255,179,92,.2)}
+
+@media(max-width:820px){
+  body{cursor:auto} #dot{display:none}
+  #torch{background:radial-gradient(150px circle at var(--mx,50%) var(--my,50%), rgba(255,179,92,.14), rgba(255,179,92,.04) 45%, transparent 70%)}
+  #name{background-image:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), #FFF6E8 0%, #FFD9A0 18%, var(--warm) 34%, rgba(237,234,228,.22) 58%, rgba(237,234,228,.09) 100%)}
+  #dimmer{right:12px;transform:translateY(-50%) scale(.82)}
+  #roomHelp{font-size:9px;letter-spacing:.12em;max-width:62vw;line-height:1.7}
+  #roomLabel{top:78px}
+  #panel{padding:96px 24px 40px}
+  #pClose{top:58px;right:22px}
+  #pTitle{font-size:23px}
+  #shop{background-size:26px 26px}
+  .stats{gap:34px}
+  #c3d{touch-action:pan-y}
+  #contact{gap:20px}
+  #back{cursor:pointer}
+}
+</style>
+</head>
+<body>
+
+<div id="pre"><div id="preBar"><div id="preFill"></div></div><div id="preTxt">LOADING 00</div></div>
+<div id="torch"></div><div id="dot"></div>
+
+<header>
+  <div data-i18n="brand">ПОЛУХИНА · СВЕТ</div>
+  <div id="lang"><span data-l="ru" class="on">RU</span><b>/</b><span data-l="en">EN</span></div>
+</header>
+
+<section id="intro" class="pad">
+  <h1 id="name" data-i18n="name">АЛИСА<br>ПОЛУХИНА</h1>
+  <div id="tag" data-i18n="tag">ДИЗАЙНЕР ИНТЕРЬЕРА · СВЕТОВОЙ ДИЗАЙНЕР · МОСКВА / АЗИЯ / ОАЭ</div>
+  <div id="scrollHint" data-i18n="hint">ВЕДИТЕ КУРСОР — И СКРОЛЛЬТЕ</div>
+</section>
+
+<section id="profile" class="pad">
+  <div id="lead" data-i18n="lead">Свет — это материал. <em>Я работаю с ним руками:</em> от концепции и визуализации до пайки контроллеров и монтажа на объекте.</div>
+  <div class="stats">
+    <div class="stat"><div class="n" data-count="7">0</div><div class="c" data-i18n="s1">ЛЕТ ПРАКТИКИ ПОЛНОГО ЦИКЛА</div></div>
+    <div class="stat"><div class="n" data-count="8" data-suffix="+">0</div><div class="c" data-i18n="s2">ПРОЕКТОВ СДАНО В СРОК И В БЮДЖЕТ</div></div>
+    <div class="stat"><div class="n" data-count="55" data-prefix="−" data-suffix="%">0</div><div class="c" data-i18n="s3">К СМЕТЕ ПОДРЯДЧИКА НА СВЕТОВОМ ПРОЕКТЕ</div></div>
+  </div>
+</section>
+
+<section id="room">
+  <div id="roomSticky">
+    <canvas id="c3d"></canvas>
+    <div id="roomLabel" data-i18n="roomLabel">03 / ОБЪЕКТЫ</div>
+    <div id="roomHelp" data-i18n="roomHelp">ТЯНИТЕ — ПОВЕРНУТЬ · КЛИК ПО ОБЪЕКТУ — ОТКРЫТЬ · ПОЛЗУНОК СПРАВА — ЯРКОСТЬ И ТЕМПЕРАТУРА</div>
+    <div id="dimmer"><div id="track"><div id="fill"></div><div id="knob"></div></div><div id="kelvin">3800K</div></div>
+    <aside id="panel">
+      <div id="pClose" data-i18n="close">ЗАКРЫТЬ ✕</div>
+      <div id="pNum">01</div><h2 id="pTitle"></h2><div id="pText"></div><div id="pMeta"></div>
+    </aside>
+  </div>
+</section>
+
+<section id="shop" class="pad">
+  <div id="shopTitle" data-i18n="shopTitle">Я не заказываю свет.<br>Я его собираю.</div>
+  <div class="grid" id="shopGrid"></div>
+</section>
+
+<section id="contact" class="pad">
+  <div id="cTitle" data-i18n="cTitle">06 / АВАРИЙНОЕ ОСВЕЩЕНИЕ</div>
+  <a class="cline" href="tel:+79999629912">+7 999 962-99-12</a>
+  <a class="cline" href="mailto:alisa-946@ya.ru">alisa-946@ya.ru</a>
+  <a class="cline" href="https://t.me/azurbagan">Telegram @azurbagan</a>
+  <div id="back" data-i18n="back">↑ ВКЛЮЧИТЬ СВЕТ ЗАНОВО</div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============ i18n ============ */
+const I18N = {
+ ru:{brand:"ПОЛУХИНА · СВЕТ",name:"АЛИСА<br>ПОЛУХИНА",tag:"ДИЗАЙНЕР ИНТЕРЬЕРА · СВЕТОВОЙ ДИЗАЙНЕР · МОСКВА / АЗИЯ / ОАЭ",
+  hint:"ВЕДИТЕ ПАЛЬЦЕМ ПО ИМЕНИ — И СКРОЛЛЬТЕ",
+  lead:"Свет — это материал. <em>Я работаю с ним руками:</em> от концепции и визуализации до пайки контроллеров и монтажа на объекте.",
+  s1:"ЛЕТ ПРАКТИКИ ПОЛНОГО ЦИКЛА",s2:"ПРОЕКТОВ СДАНО В СРОК И В БЮДЖЕТ",s3:"К СМЕТЕ ПОДРЯДЧИКА НА СВЕТОВОМ ПРОЕКТЕ",
+  roomLabel:"03 / ОБЪЕКТЫ",roomHelp:"ПРОВЕДИТЕ ВБОК — ПОВЕРНУТЬ · КАСАНИЕ ОБЪЕКТА — ОТКРЫТЬ · ПОЛЗУНОК СПРАВА — ЯРКОСТЬ",
+  close:"ЗАКРЫТЬ ✕",shopTitle:"Я не заказываю свет.<br>Я его собираю.",cTitle:"06 / АВАРИЙНОЕ ОСВЕЩЕНИЕ",back:"↑ ВКЛЮЧИТЬ СВЕТ ЗАНОВО",loading:"ЗАГРУЗКА"},
+ en:{brand:"POLUKHINA · LIGHT",name:"ALISA<br>POLUKHINA",tag:"INTERIOR DESIGNER · LIGHTING DESIGNER · MOSCOW / ASIA / UAE",
+  hint:"RUN YOUR FINGER OVER THE NAME — THEN SCROLL",
+  lead:"Light is a material. <em>I work it by hand:</em> from concept and rendering to soldering controllers and on-site installation.",
+  s1:"YEARS OF FULL-CYCLE PRACTICE",s2:"PROJECTS DELIVERED ON TIME AND ON BUDGET",s3:"BELOW THE CONTRACTOR'S QUOTE ON A LIGHTING PROJECT",
+  roomLabel:"03 / OBJECTS",roomHelp:"SWIPE SIDEWAYS TO ORBIT · TAP AN OBJECT TO OPEN · SLIDER ON THE RIGHT — BRIGHTNESS",
+  close:"CLOSE ✕",shopTitle:"I don't order light.<br>I build it.",cTitle:"06 / EMERGENCY LIGHTING",back:"↑ TURN THE LIGHT BACK ON",loading:"LOADING"}
+};
+
+/* ============ контент объектов ============ */
+const OBJ = [
+ {id:"cube",t:{ru:"Светящиеся кубы",en:"Luminous cubes"},
+  d:{ru:"Авторские световые объекты для коммерческого пространства 200 м². Каркас, LED-ленты, контроллер HD2020 и программа — всё собрано и запрограммировано самостоятельно.",
+     en:"Custom light objects for a 200 m² commercial space. Frame, LED strips, HD2020 controller and firmware — all assembled and programmed in-house."},
+  m:{ru:["2026 · Коммерческое пространство","200 м² · три зоны","Смета 250 000 ₽ — на 55% ниже КП подрядчика"],
+     en:["2026 · Commercial space","200 m² · three zones","Budget ₽250k — 55% below the contractor's quote"]}},
+ {id:"ticker",t:{ru:"Бегущие строки",en:"LED tickers"},
+  d:{ru:"Программируемые текстовые ленты как часть светового сценария зала. Прошивка и раскладка модулей — собственные.",
+     en:"Programmable text strips as part of the venue's lighting scenario. Firmware and module layout done personally."},
+  m:{ru:["Arduino · контроллеры · диммеры","Пайка и модификация оборудования","−60% к закупочной части сметы"],
+     en:["Arduino · controllers · dimmers","Soldering and hardware modification","−60% on the equipment line of the budget"]}},
+ {id:"laser",t:{ru:"Лазерная система",en:"Laser system"},
+  d:{ru:"Лазерные модули, выстроенные в геометрию помещения: лучи работают как чертёж пространства, а не как эффект.",
+     en:"Laser modules aligned to the room's geometry: the beams read as a drawing of the space, not as an effect."},
+  m:{ru:["Лазерные модули · юстировка","Прямые закупки без посредников","Монтаж и наладка на объекте"],
+     en:["Laser modules · alignment","Direct sourcing, no middlemen","On-site installation and tuning"]}},
+ {id:"interior",t:{ru:"Жилой интерьер под ключ",en:"Full-cycle residential interior"},
+  d:{ru:"Проект полного цикла: планировочное решение, 3D-модель, визуализации Twinmotion, рабочие чертежи, смета, комплектация и авторский надзор.",
+     en:"Full-cycle project: layout, 3D model, Twinmotion renders, working drawings, budget, procurement and design supervision."},
+  m:{ru:["2025—2026 · Жилой сегмент","Twinmotion · SketchUp · AutoCAD","Сдан в срок и в рамках бюджета"],
+     en:["2025—2026 · Residential","Twinmotion · SketchUp · AutoCAD","Delivered on time and on budget"]}},
+ {id:"vitrine",t:{ru:"Экспозиции «Коломенское»",en:"Kolomenskoye exhibitions"},
+  d:{ru:"Экспозиционные решения для трёх выставочных проектов музея-заповедника: витрины, исторические дома и выставочные помещения, графика и презентации.",
+     en:"Exhibition design for three projects of the museum reserve: display cases, historic houses and gallery spaces, plus graphics and presentations."},
+  m:{ru:["2024 · Редактор I категории","3 выставочных проекта","SketchUp · InDesign"],
+     en:["2024 · Editor, first category","3 exhibition projects","SketchUp · InDesign"]}},
+ {id:"land",t:{ru:"Ландшафт 1 000 м²",en:"1,000 m² landscape"},
+  d:{ru:"Благоустройство частной территории: 7 функциональных зон без взаимных пересечений, зонирование построено на расчёте инсоляции и ориентации дома.",
+     en:"Private grounds: 7 functional zones with no overlap, zoning derived from insolation analysis and the house's orientation."},
+  m:{ru:["2022—2023 · 1 000 м²","Спорт · кинотеатр · душевая · парковка","Расчёт инсоляции как основа плана"],
+     en:["2022—2023 · 1,000 m²","Sports · cinema · shower · parking","Insolation analysis as the basis of the plan"]}},
+ {id:"thesis",t:{ru:"Магистерская диссертация",en:"Master's thesis"},
+  d:{ru:"«Принципы светоцветовой сценографии фестивальной среды в природном пространстве». Диплом с отличием, Институт современного искусства.",
+     en:"“Principles of light-and-colour scenography for festival environments in natural spaces.” Distinction, Institute of Contemporary Art."},
+  m:{ru:["2022—2024 · Магистратура","Дизайн среды · диплом с отличием","Бакалавриат 2018—2022"],
+     en:["2022—2024 · Master's degree","Environmental design · with distinction","Bachelor's 2018—2022"]}}
+];
+
+const SHOP = [
+ {k:"ARDUINO",ru:"Контроллеры, диммеры и логика сценариев — программирую сама",en:"Controllers, dimmers and scenario logic — programmed personally"},
+ {k:"LED",ru:"Ленты, гибкие световые шнуры, бегущие строки, лазерные модули",en:"Strips, flexible light cords, tickers, laser modules"},
+ {k:"HD2020",ru:"Электрическая и программная часть без привлечения подрядчика",en:"Electrical and firmware layers with no contractor involved"},
+ {k:"SOLDER",ru:"Пайка, модификация оборудования, монтаж электрики на объекте",en:"Soldering, hardware modification, on-site electrical installation"},
+ {k:"3D PRINT",ru:"Bambu Studio, подготовка моделей и печать корпусов",en:"Bambu Studio, model prep and enclosure printing"},
+ {k:"CAD",ru:"Twinmotion, SketchUp, Archicad, AutoCAD, InDesign",en:"Twinmotion, SketchUp, Archicad, AutoCAD, InDesign"}
+];
+
+let LANG = (navigator.language||"ru").toLowerCase().startsWith("ru") ? "ru" : "en";
+
+function renderShop(){
+  document.getElementById("shopGrid").innerHTML = SHOP.map(s=>
+    `<div class="cell"><div class="k">${s.k}</div><div class="v">${s[LANG]}</div></div>`).join("");
+}
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const v = I18N[LANG][el.dataset.i18n]; if(v!==undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll("#lang span").forEach(s=>s.classList.toggle("on", s.dataset.l===LANG));
+  renderShop();
+  if(openIdx!==null) fillPanel(openIdx);
+  labelTextures.forEach((f)=>f());
+}
+document.getElementById("lang").addEventListener("click",e=>{
+  const l = e.target.dataset.l; if(!l||l===LANG) return; LANG=l; applyLang();
+});
+
+/* ============ курсор ============ */
+const dot=document.getElementById("dot"), torch=document.getElementById("torch");
+let mx=innerWidth/2,my=innerHeight/2,tagTimer;
+addEventListener("pointermove",e=>{
+  mx=e.clientX;my=e.clientY;
+  document.documentElement.style.setProperty("--mx",mx+"px");
+  document.documentElement.style.setProperty("--my",my+"px");
+  dot.style.left=mx+"px";dot.style.top=my+"px";
+  clearTimeout(tagTimer);
+  tagTimer=setTimeout(()=>document.getElementById("tag").classList.add("show"),1800);
+},{passive:true});
+setTimeout(()=>document.getElementById("tag").classList.add("show"),3000);
+
+/* на телефоне указателя нет — фонарь дрейфует сам + реагирует на наклон */
+const COARSE = matchMedia("(hover:none),(pointer:coarse)").matches;
+let lastPointer=-1e9, gx=0, gy=0;
+addEventListener("pointermove",()=>lastPointer=performance.now(),{passive:true});
+addEventListener("deviceorientation",e=>{
+  gx=Math.max(-1,Math.min(1,(e.gamma||0)/34));
+  gy=Math.max(-1,Math.min(1,((e.beta||0)-45)/34));
+},true);
+(function drift(){
+  requestAnimationFrame(drift);
+  if(performance.now()-lastPointer < 2600) return;   // пользователь только что вёл пальцем
+  const t=performance.now()/1000;
+  // пока видно интро — фонарь ходит прямо по имени
+  const r=document.getElementById("name").getBoundingClientRect();
+  const onIntro = r.bottom>0 && r.top<innerHeight;
+  const cx = onIntro ? r.left+r.width/2 : innerWidth/2;
+  const cy = onIntro ? r.top +r.height/2 : innerHeight/2;
+  const ax = onIntro ? r.width*.42 : innerWidth*.24;
+  const ay = onIntro ? r.height*.40 : innerHeight*.20;
+  const px = cx + Math.sin(t*.42)*ax + gx*ax*.8;
+  const py = cy + Math.cos(t*.29)*ay + gy*ay*.8;
+  mx=px;my=py;
+  document.documentElement.style.setProperty("--mx",px+"px");
+  document.documentElement.style.setProperty("--my",py+"px");
+})();
+
+/* ============ прелоадер ============ */
+(function(){
+  const fill=document.getElementById("preFill"),txt=document.getElementById("preTxt"),pre=document.getElementById("pre");
+  let p=0;
+  const iv=setInterval(()=>{
+    p += Math.random()*13+4;
+    if(p>=100){p=100;clearInterval(iv);
+      setTimeout(()=>{pre.classList.add("gone");setTimeout(()=>pre.style.display="none",1000);},420);}
+    // мерцание, как у ленты при подаче питания
+    fill.style.width=p+"%";
+    fill.style.opacity = p<100 && Math.random()<.25 ? .55 : 1;
+    txt.textContent = I18N[LANG].loading+" "+String(Math.floor(p)).padStart(2,"0");
+  },95);
+})();
+
+/* ============ счётчики ============ */
+const seen=new WeakSet();
+(function(){const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);
+  const el=e.target,to=+el.dataset.count,pf=el.dataset.prefix||"",sf=el.dataset.suffix||"";
+  const st=performance.now();
+  (function step(t){const k=Math.min(1,(t-st)/1300);const v=Math.round(to*(1-Math.pow(1-k,3)));
+   el.textContent=pf+v+sf;if(k<1)requestAnimationFrame(step);})(st);
+}),{threshold:.5});
+ document.querySelectorAll("[data-count]").forEach(el=>io.observe(el));})();
+
+/* ============ 3D-комната ============ */
+const canvas=document.getElementById("c3d");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer:coarse)').matches?1.5:2));
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x0E0E12,0.036);
+const camera=new THREE.PerspectiveCamera(48,1,.1,120);
+camera.position.set(0,1.2,15.5);
+
+const world=new THREE.Group(); scene.add(world);
+
+// свет
+const ambient=new THREE.AmbientLight(0xffffff,.10); scene.add(ambient);
+const cursorLight=new THREE.PointLight(0xFFB35C,1.6,26,2); scene.add(cursorLight);
+const fillLight=new THREE.PointLight(0xB8D8FF,.35,40,2); fillLight.position.set(-8,7,6); scene.add(fillLight);
+
+// пол
+const floorMat=new THREE.MeshStandardMaterial({color:0x0a0a0d,roughness:.75,metalness:.25});
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(70,70),floorMat);
+floor.rotation.x=-Math.PI/2; floor.position.y=-3.2; world.add(floor);
+const grid=new THREE.GridHelper(70,70,0x1a1a22,0x14141a);
+grid.position.y=-3.19; world.add(grid);
+
+// текстура свечения для спрайтов
+function glowTex(){
+  const c=document.createElement("canvas");c.width=c.height=128;const g=c.getContext("2d");
+  const rg=g.createRadialGradient(64,64,0,64,64,64);
+  rg.addColorStop(0,"rgba(255,255,255,1)");rg.addColorStop(.25,"rgba(255,255,255,.45)");
+  rg.addColorStop(1,"rgba(255,255,255,0)");
+  g.fillStyle=rg;g.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const GT=glowTex();
+function addGlow(parent,color,size,op){
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:GT,color,transparent:true,opacity:op||.5,
+    blending:THREE.AdditiveBlending,depthWrite:false}));
+  s.scale.set(size,size,1);parent.add(s);return s;
+}
+// подпись-текстура (обновляется при смене языка)
+const labelTextures=[];
+function makeLabel(parent,getText,y){
+  const c=document.createElement("canvas");c.width=512;c.height=64;
+  const tex=new THREE.CanvasTexture(c);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthWrite:false}));
+  spr.scale.set(4.2,.52,1);spr.position.y=y;parent.add(spr);
+  function draw(){const g=c.getContext("2d");g.clearRect(0,0,512,64);
+    g.font="500 26px 'JetBrains Mono',monospace";g.fillStyle="#EDEAE4";g.textAlign="center";g.textBaseline="middle";
+    g.fillText(getText().toUpperCase(),256,32);tex.needsUpdate=true;}
+  draw();labelTextures.push(draw);
+  return spr;
+}
+
+const WARM=0xFFB35C, COOL=0xB8D8FF, LASER=0xFF3B4E;
+const items=[]; // {group, mesh(pickable), glow, label, idx, base}
+
+function place(g,x,y,z){g.position.set(x,y,z);world.add(g);}
+
+/* 1 — светящиеся кубы */
+(function(){
+  const g=new THREE.Group();
+  const mat=new THREE.MeshBasicMaterial({color:WARM,wireframe:true});
+  const solid=new THREE.MeshStandardMaterial({color:0x111114,emissive:WARM,emissiveIntensity:.35,roughness:.4});
+  const box=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.5,1.5),solid);g.add(box);
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(1.9,1.9,1.9),mat));
+  addGlow(g,WARM,6,.35);
+  const l=makeLabel(g,()=>OBJ[0].t[LANG],1.9);
+  place(g,-4.6,.4,-1.5);
+  items.push({g,pick:box,label:l,idx:0,spin:.004});
+})();
+
+/* 2 — бегущая строка */
+(function(){
+  const g=new THREE.Group();
+  const c=document.createElement("canvas");c.width=1024;c.height=128;
+  const ctx=c.getContext("2d");
+  const tex=new THREE.CanvasTexture(c);tex.wrapS=THREE.RepeatWrapping;
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(4.4,.62),
+    new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));
+  g.add(mesh);
+  // рамка
+  const fr=new THREE.Mesh(new THREE.BoxGeometry(4.7,.9,.14),
+    new THREE.MeshStandardMaterial({color:0x0d0d10,roughness:.6}));
+  fr.position.z=-.09;g.add(fr);
+  addGlow(g,WARM,4.5,.28);
+  function drawTicker(){
+    ctx.fillStyle="#050506";ctx.fillRect(0,0,1024,128);
+    ctx.font="600 62px 'JetBrains Mono',monospace";ctx.fillStyle="#FFB35C";ctx.textBaseline="middle";
+    ctx.fillText(LANG==="ru"?"LED · ARDUINO · HD2020 · СВЕТ РУКАМИ · ":"LED · ARDUINO · HD2020 · LIGHT BY HAND · ",0,64);
+    tex.needsUpdate=true;
+  }
+  drawTicker();labelTextures.push(drawTicker);
+  const l=makeLabel(g,()=>OBJ[1].t[LANG],1.15);
+  place(g,0,2.4,-4.2);
+  items.push({g,pick:mesh,label:l,idx:1,ticker:tex});
+})();
+
+/* 3 — лазерная система */
+(function(){
+  const g=new THREE.Group();
+  const beams=[];
+  for(let i=0;i<7;i++){
+    const b=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,7,6),
+      new THREE.MeshBasicMaterial({color:LASER,transparent:true,opacity:.7}));
+    b.rotation.z=Math.PI/2; b.rotation.y=(i/7)*Math.PI;
+    b.position.y=(i-3)*.32; g.add(b); beams.push(b);
+  }
+  const hit=new THREE.Mesh(new THREE.BoxGeometry(6,2.6,2.6),
+    new THREE.MeshBasicMaterial({visible:false}));
+  g.add(hit);
+  addGlow(g,LASER,5,.22);
+  const l=makeLabel(g,()=>OBJ[2].t[LANG],2.1);
+  place(g,4.9,.9,-2.2);
+  items.push({g,pick:hit,label:l,idx:2,beams});
+})();
+
+/* 4 — объём интерьера */
+(function(){
+  const g=new THREE.Group();
+  const edges=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(3.4,1.9,2.6)),
+    new THREE.LineBasicMaterial({color:COOL,transparent:true,opacity:.75}));
+  g.add(edges);
+  // перегородки
+  const wallMat=new THREE.MeshStandardMaterial({color:0x14141a,roughness:.85,transparent:true,opacity:.85});
+  const w1=new THREE.Mesh(new THREE.BoxGeometry(.06,1.9,1.5),wallMat);w1.position.set(.5,0,-.5);g.add(w1);
+  const w2=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.9,.06),wallMat);w2.position.set(-.9,0,.4);g.add(w2);
+  const pick=new THREE.Mesh(new THREE.BoxGeometry(3.4,1.9,2.6),new THREE.MeshBasicMaterial({visible:false}));
+  g.add(pick);
+  addGlow(g,COOL,5,.2);
+  const l=makeLabel(g,()=>OBJ[3].t[LANG],1.6);
+  place(g,-3.2,-1.4,3.2);
+  items.push({g,pick,label:l,idx:3,spin:-.002});
+})();
+
+/* 5 — витрина */
+(function(){
+  const g=new THREE.Group();
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(1.3,2.1,1.3),
+    new THREE.MeshStandardMaterial({color:0x0d1016,roughness:.1,metalness:.7,transparent:true,opacity:.45}));
+  g.add(glass);
+  g.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.3,2.1,1.3)),
+    new THREE.LineBasicMaterial({color:COOL,transparent:true,opacity:.85})));
+  const art=new THREE.Mesh(new THREE.IcosahedronGeometry(.36,0),
+    new THREE.MeshStandardMaterial({color:0x1a1a1f,emissive:WARM,emissiveIntensity:.5,roughness:.5}));
+  art.position.y=-.2;g.add(art);
+  addGlow(g,COOL,3.4,.22);
+  const l=makeLabel(g,()=>OBJ[4].t[LANG],1.75);
+  place(g,3.1,-1.2,3.6);
+  items.push({g,pick:glass,label:l,idx:4,art});
+})();
+
+/* 6 — ландшафт 1000 м² */
+(function(){
+  const g=new THREE.Group();
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(4.2,4.2),
+    new THREE.MeshBasicMaterial({color:0x0b1410,transparent:true,opacity:.8,side:THREE.DoubleSide}));
+  plane.rotation.x=-Math.PI/2;g.add(plane);
+  const zones=[[-1.3,-1.3,1.3,1.1],[.4,-1.4,1.6,.9],[-1.5,.5,1,1.4],[.3,.6,1.7,1.6],[-.2,-.1,.7,.6],[1.55,1.55,.7,.7],[-1.7,1.7,.5,.5]];
+  zones.forEach(z=>{
+    const r=new THREE.Mesh(new THREE.PlaneGeometry(z[2],z[3]),
+      new THREE.MeshBasicMaterial({color:WARM,transparent:true,opacity:.13,side:THREE.DoubleSide}));
+    r.rotation.x=-Math.PI/2;r.position.set(z[0],.012,z[1]);g.add(r);
+    const e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(z[2],z[3])),
+      new THREE.LineBasicMaterial({color:WARM,transparent:true,opacity:.55}));
+    e.rotation.x=-Math.PI/2;e.position.set(z[0],.02,z[1]);g.add(e);
+  });
+  const pick=new THREE.Mesh(new THREE.BoxGeometry(4.2,.4,4.2),new THREE.MeshBasicMaterial({visible:false}));
+  g.add(pick);
+  addGlow(g,WARM,5,.14);
+  const l=makeLabel(g,()=>OBJ[5].t[LANG],1.2);
+  place(g,0,-2.85,1.2);
+  items.push({g,pick,label:l,idx:5,spin:.0012});
+})();
+
+/* 7 — диссертация */
+(function(){
+  const g=new THREE.Group();
+  const panel=new THREE.Mesh(new THREE.PlaneGeometry(1.5,2.1),
+    new THREE.MeshStandardMaterial({color:0x101015,emissive:COOL,emissiveIntensity:.28,roughness:.6,side:THREE.DoubleSide}));
+  g.add(panel);
+  for(let i=0;i<5;i++){
+    const line=new THREE.Mesh(new THREE.PlaneGeometry(1.05,.045),
+      new THREE.MeshBasicMaterial({color:i%2?WARM:COOL,transparent:true,opacity:.6}));
+    line.position.set(0,.62-i*.28,.01);g.add(line);
+  }
+  addGlow(g,COOL,3.2,.2);
+  const l=makeLabel(g,()=>OBJ[6].t[LANG],1.55);
+  place(g,5.4,2.6,2.4);
+  items.push({g,pick:panel,label:l,idx:6,spin:.003});
+})();
+
+/* ---- ресайз ---- */
+function resize(){
+  const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+addEventListener("resize",resize);
+
+/* ---- вращение перетаскиванием ---- */
+let drag=false,px=0,py=0,rotY=0,rotX=0,tRotY=0,tRotX=0;
+canvas.addEventListener("pointerdown",e=>{drag=true;px=e.clientX;py=e.clientY;dot.classList.add("big");lastPointer=performance.now();});
+addEventListener("pointerup",()=>{drag=false;dot.classList.remove("big");});
+addEventListener("pointermove",e=>{
+  if(!drag)return;
+  tRotY+=(e.clientX-px)*.005; tRotX+=(e.clientY-py)*(COARSE?0:.003);
+  tRotX=Math.max(-.5,Math.min(.55,tRotX));
+  px=e.clientX;py=e.clientY;
+},{passive:true});
+
+/* ---- raycast / клик ---- */
+const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+let hovered=null,openIdx=null;
+function pickAt(x,y){
+  const r=canvas.getBoundingClientRect();
+  ndc.x=((x-r.left)/r.width)*2-1; ndc.y=-((y-r.top)/r.height)*2+1;
+  ray.setFromCamera(ndc,camera);
+  const hits=ray.intersectObjects(items.map(i=>i.pick),false);
+  return hits.length?items.find(i=>i.pick===hits[0].object):null;
+}
+canvas.addEventListener("pointermove",e=>{
+  const it=pickAt(e.clientX,e.clientY);
+  if(it!==hovered){hovered=it;dot.classList.toggle("big",!!it);}
+},{passive:true});
+let downX=0,downY=0;
+canvas.addEventListener("pointerdown",e=>{downX=e.clientX;downY=e.clientY;});
+canvas.addEventListener("pointerup",e=>{
+  if(Math.hypot(e.clientX-downX,e.clientY-downY)>7)return; // это было перетаскивание
+  const it=pickAt(e.clientX,e.clientY);
+  if(it)openPanel(it.idx); else closePanel();
+});
+
+/* ---- панель ---- */
+const panel=document.getElementById("panel");
+function fillPanel(i){
+  const o=OBJ[i];
+  document.getElementById("pNum").textContent=String(i+1).padStart(2,"0")+" / 07";
+  document.getElementById("pTitle").textContent=o.t[LANG];
+  document.getElementById("pText").textContent=o.d[LANG];
+  document.getElementById("pMeta").innerHTML=o.m[LANG].map(x=>"· "+x).join("<br>");
+}
+function openPanel(i){openIdx=i;fillPanel(i);panel.classList.add("open");}
+function closePanel(){openIdx=null;panel.classList.remove("open");}
+document.getElementById("pClose").addEventListener("click",e=>{e.stopPropagation();closePanel();});
+
+/* ---- диммер ---- */
+let level=.55;
+const track=document.getElementById("track"),fill=document.getElementById("fill"),
+      knob=document.getElementById("knob"),kelvin=document.getElementById("kelvin");
+function setLevel(v){
+  level=Math.max(.06,Math.min(1,v));
+  fill.style.height=(level*100)+"%";
+  knob.style.bottom="calc("+(level*100)+"% - 8px)";
+  const K=Math.round(2700+level*3800);
+  kelvin.textContent=K+"K";
+  // цвет курсора-фонаря меняется вместе с температурой
+  const c=new THREE.Color(WARM).lerp(new THREE.Color(COOL),Math.max(0,(level-.35)/.65));
+  cursorLight.color=c;
+  const hex="#"+c.getHexString();
+  document.documentElement.style.setProperty("--accent",hex);
+  torch.style.background=`radial-gradient(220px circle at var(--mx,50%) var(--my,50%), ${hex}22, ${hex}0a 45%, transparent 70%)`;
+}
+let dimDrag=false;
+function dimFromY(y){const r=track.getBoundingClientRect();setLevel(1-(y-r.top)/r.height);}
+track.addEventListener("pointerdown",e=>{dimDrag=true;dimFromY(e.clientY);e.stopPropagation();});
+addEventListener("pointermove",e=>{if(dimDrag)dimFromY(e.clientY);});
+addEventListener("pointerup",()=>dimDrag=false);
+setLevel(.55);
+
+/* ---- «включить свет заново» ---- */
+document.getElementById("back").addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
+
+/* ---- цикл ---- */
+let t=0;
+function tick(){
+  requestAnimationFrame(tick);
+  t+=.016;
+  resize();
+
+  if(COARSE && !drag) tRotY += .0009;
+  rotY+=(tRotY-rotY)*.06; rotX+=(tRotX-rotX)*.06;
+  // лёгкий параллакс от курсора поверх перетаскивания
+  const nx=(mx/innerWidth-.5),ny=(my/innerHeight-.5);
+  world.rotation.y=rotY+nx*.22;
+  world.rotation.x=rotX+ny*.10;
+
+  // курсор как источник света в сцене
+  cursorLight.position.set(nx*16,-ny*10+1.5,7.5);
+  cursorLight.intensity=.5+level*3.4;
+  ambient.intensity=.04+level*.14;
+  fillLight.intensity=.1+level*.5;
+
+  items.forEach(it=>{
+    if(it.spin)it.g.rotation.y+=it.spin;
+    if(it.ticker)it.ticker.offset.x=(t*.14)%1;
+    if(it.beams)it.beams.forEach((b,i)=>b.material.opacity=.35+.45*Math.abs(Math.sin(t*1.2+i)));
+    if(it.art){it.art.rotation.y+=.006;it.art.rotation.x+=.003;}
+    it.g.position.y += Math.sin(t*.7+it.idx)*.0016;
+    const active = hovered===it || openIdx===it.idx;
+    it.label.material.opacity += ((active?1:0)-it.label.material.opacity)*.12;
+    it.g.scale.setScalar(it.g.scale.x + ((active?1.06:1)-it.g.scale.x)*.12);
+  });
+
+  renderer.render(scene,camera);
+}
+resize();tick();
+applyLang();
+</script>
+</body>
+</html>
