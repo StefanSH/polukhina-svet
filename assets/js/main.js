@@ -191,14 +191,14 @@ function openCase(id){
   if(changed) caseScroll.scrollTop=0;
   caseEl.classList.add("open"); caseEl.setAttribute("aria-hidden","false");
   document.body.classList.add("locked");
-  document.title = PROJECTS.find(p=>p.id===id).t[LANG]+" — Алиса Полухина";
+  document.title = PROJECTS.find(p=>p.id===id).t[LANG]+" — Полухина дизайн";
 }
 function closeCase(){
   if(!caseId) return;
   caseId=null;
   caseEl.classList.remove("open"); caseEl.setAttribute("aria-hidden","true");
   document.body.classList.remove("locked");
-  document.title = "АЛИСА ПОЛУХИНА — свет и пространство";
+  document.title = "Полухина дизайн";
   caseEl.querySelectorAll("video").forEach(v=>v.pause());
 }
 function route(){

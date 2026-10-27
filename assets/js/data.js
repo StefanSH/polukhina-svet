@@ -3,7 +3,7 @@
 const DISK = "https://disk.yandex.ru/d/5gAbV2c_4Guc5w";
 
 const I18N = {
- ru:{brand:"ПОЛУХИНА · СВЕТ",name:"АЛИСА<br>ПОЛУХИНА",
+ ru:{brand:"ПОЛУХИНА ДИЗАЙН",name:"АЛИСА<br>ПОЛУХИНА",
   tag:"СВЕТОВОЙ И ПРОСТРАНСТВЕННЫЙ ДИЗАЙНЕР ПОЛНОГО ЦИКЛА · МОСКВА / УДАЛЁННО / АЗИЯ",
   hint:"ВЕДИТЕ КУРСОР — И СКРОЛЛЬТЕ",hintTouch:"ВЕДИТЕ ПАЛЬЦЕМ ПО ИМЕНИ — И СКРОЛЛЬТЕ",
   navWork:"ПРОЕКТЫ",navRoom:"ОБЪЕКТЫ",navPath:"ПУТЬ",navContact:"КОНТАКТЫ",
@@ -18,7 +18,7 @@ const I18N = {
   cTitle:"06 / АВАРИЙНОЕ ОСВЕЩЕНИЕ",back:"↑ ВКЛЮЧИТЬ СВЕТ ЗАНОВО",loading:"ЗАГРУЗКА",
   caseBack:"← ВСЕ ПРОЕКТЫ",casePrev:"← ПРЕДЫДУЩИЙ",caseNext:"СЛЕДУЮЩИЙ →",
   video:"ВИДЕО НА ЯНДЕКС.ДИСКЕ ↗",resume:"СКАЧАТЬ РЕЗЮМЕ RU / EN ↓"},
- en:{brand:"POLUKHINA · LIGHT",name:"ALISA<br>POLUKHINA",
+ en:{brand:"POLUKHINA DESIGN",name:"ALISA<br>POLUKHINA",
   tag:"FULL-CYCLE LIGHTING & SPATIAL DESIGNER · MOSCOW / REMOTE / ASIA",
   hint:"MOVE THE CURSOR — THEN SCROLL",hintTouch:"RUN YOUR FINGER OVER THE NAME — THEN SCROLL",
   navWork:"WORK",navRoom:"OBJECTS",navPath:"PATH",navContact:"CONTACT",
@@ -38,7 +38,7 @@ const I18N = {
 /* Проекты. g — группы галереи: номера файлов из assets/img/<id>/NN.webp.
    f — ключевые элементы проекта (картинка + текст). */
 const PROJECTS = [
- {id:"vibes",cover:1,
+ {id:"vibes",cover:2,
   t:{ru:"Hookah Place Vibes",en:"Hookah Place Vibes"},
   sub:{ru:"Световые инсталляции для кальянной",en:"Light installations for a hookah lounge"},
   year:"2026",
@@ -66,7 +66,7 @@ const PROJECTS = [
      {t:{ru:"Концепт-листы: лестница и подоконники",en:"Concept sheets: staircase and window sills"},n:[8,9,10,11]}],
   video:{ru:"Видео: зона европейской посадки",en:"Video: European seating area",href:DISK+"/Vibes%20(кальянная%20Москва%20сити)"}},
 
- {id:"kolomenskoe",cover:8,
+ {id:"kolomenskoe",cover:1,
   t:{ru:"Выставки музея-заповедника «Коломенское»",en:"Kolomenskoye Museum-Reserve exhibitions"},
   sub:{ru:"Экспозиционный дизайн: витрины, исторические дома, выставочные залы",en:"Exhibition design: display cases, historic houses, gallery rooms"},
   year:"2024",
@@ -85,11 +85,7 @@ const PROJECTS = [
             "“The First Printers” (Duma Chamber): an exhibition on the birth of book printing in Russia, centred on the “Apostol” by Ivan Fyodorov and Pyotr Mstislavets.",
             "“Cultural Codes. The Age of Enlightenment” (Stupino Museum of Local History, 7 Feb — 16 Mar 2025): 157 objects from the museum's collections in five thematic sections.",
             "Measured plans and wall elevations of Peter the Great's Cabin, layouts of objects in display cases."]},
-  g:[{t:{ru:"Искусство царских кузнецов",en:"The Art of the Tsar's Blacksmiths"},n:[1,2,3,4,5]},
-     {t:{ru:"Первопечатники",en:"The First Printers"},n:[6,7]},
-     {t:{ru:"Культурные коды. Эпоха Просвещения",en:"Cultural Codes. The Age of Enlightenment"},n:[8,9,10,11]},
-     {t:{ru:"Чертежи: Домик Петра I, размещение предметов",en:"Drawings: Peter the Great's Cabin, object layouts"},n:[12,13,14,15]},
-     {t:{ru:"Экспозиционный материал: стойки, живопись, плакаты",en:"Display system: stands, paintings, posters"},n:[16,17,18]}]},
+  g:[{t:{ru:"Чертежи: Домик Петра I, размещение предметов",en:"Drawings: Peter the Great's Cabin, object layouts"},n:[2,3,4,5]}]},
 
  {id:"festival",cover:1,
   t:{ru:"Фестиваль света в природной среде",en:"A light festival in a natural landscape"},
@@ -135,7 +131,7 @@ const PROJECTS = [
      {t:{ru:"Существующее состояние",en:"Existing condition"},n:[17,18,19,20,21]},
      {t:{ru:"Планы и разрезы",en:"Plans and sections"},n:[22,23,24,25,26,27,28]}]},
 
- {id:"private",cover:1,
+ {id:"private",cover:3,
   t:{ru:"Частные объекты",en:"Private commissions"},
   sub:{ru:"Мебель, кухни, обмеры, концепции",en:"Furniture, kitchens, surveys, concepts"},
   year:"2022—2026",
