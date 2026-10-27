@@ -6,8 +6,9 @@
 ## Структура страницы
 1. Интро — имя, подсвеченное курсором-фонарём
 2. Профиль — позиционирование и цифры
-3. **Проекты** — пять кейсов; каждый открывается как отдельная страница по адресу `#/<id>`
-4. Объекты — 3D-комната (three.js), каждый объект ведёт в свой проект
+3. **Проекты** — 3D-карусель (three.js): по объекту на каждую папку Диска, прокрутка поворачивает кольцо и выбирает проект
+4. Работы — карточки проектов с фото; каждый открывается как отдельная страница по адресу `#/<id>`,
+   подпапки проекта — вкладки-кнопки (`#/<id>/<N>` открывает N-ю вкладку)
 5. Мастерская — навыки и технологии
 6. Путь — опыт, образование, документы (PDF)
 7. Контакты
@@ -16,13 +17,13 @@
 ```
 index.html              разметка
 assets/css/main.css     стили
-assets/js/data.js       ВЕСЬ контент RU/EN: тексты, проекты, объекты комнаты, опыт, документы
+assets/js/data.js       ВЕСЬ контент RU/EN: тексты, проекты, объекты карусели, опыт, документы
 assets/js/media.js      размеры изображений (сгенерировано, см. ниже)
 assets/js/main.js       язык, курсор, список проектов, страница проекта, лайтбокс
-assets/js/room.js       3D-комната
+assets/js/room.js       3D-карусель проектов
 assets/img/<id>/NN.webp      изображения проекта (до 1600px), NN-s.webp — превью 720px
 assets/docs/            резюме и письма
-assets/video/           короткие ролики
+assets/video/           ролики проектов (mp4, moov в начале файла) и кадры-обложки .webp
 ```
 
 ## Как добавить изображения в проект
@@ -33,8 +34,8 @@ assets/video/           короткие ролики
    ```
 2. Пересобрать `assets/js/media.js`:
    ```
-   { echo "const MEDIA = {"; for d in vibes kolomenskoe festival balashikha private; do printf ' %s:[' $d; magick identify -format '[%w,%h],' $(ls assets/img/$d/[0-9][0-9].webp | sort) | sed 's/,$//'; echo '],'; done; echo "};"; } > assets/js/media.js
+   { echo "const MEDIA = {"; for d in vibes kolomenskoe festival balashikha private references; do printf ' %s:[' $d; magick identify -format '[%w,%h],' $(ls assets/img/$d/[0-9][0-9].webp | sort) | sed 's/,$//'; echo '],'; done; echo "};"; } > assets/js/media.js
    ```
-3. Добавить номер в нужную группу `g` проекта в `assets/js/data.js`.
+3. Добавить номер в нужную вкладку `dirs` (подпапка) или раздел `g` (корень папки) проекта в `assets/js/data.js`.
 
 Исходники: https://disk.yandex.ru/d/5gAbV2c_4Guc5w

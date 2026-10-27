@@ -20,8 +20,8 @@
 <header>
   <a href="#intro" class="brand" data-i18n="brand">ПОЛУХИНА ДИЗАЙН</a>
   <nav>
-    <a href="#work" data-i18n="navWork">ПРОЕКТЫ</a>
-    <a href="#room" data-i18n="navRoom">ОБЪЕКТЫ</a>
+    <a href="#room" data-i18n="navRoom">ПРОЕКТЫ</a>
+    <a href="#work" data-i18n="navWork">РАБОТЫ</a>
     <a href="#path" data-i18n="navPath">ПУТЬ</a>
     <a href="#contact" data-i18n="navContact">КОНТАКТЫ</a>
   </nav>
@@ -44,24 +44,25 @@
   </div>
 </section>
 
-<section id="work" class="pad">
-  <div class="label" data-i18n="workLabel">02 / ПРОЕКТЫ</div>
-  <h2 class="h2" data-i18n="workTitle">Избранные работы</h2>
-  <div id="workList"></div>
-</section>
-
 <section id="room">
   <div id="roomSticky">
     <canvas id="c3d"></canvas>
-    <div id="roomLabel" class="label" data-i18n="roomLabel">03 / ОБЪЕКТЫ</div>
+    <div id="roomLabel" class="label" data-i18n="roomLabel">02 / ПРОЕКТЫ</div>
+    <nav id="roomNav" aria-label="projects"></nav>
     <div id="roomHelp" data-i18n="roomHelp"></div>
     <div id="dimmer"><div id="track"><div id="fill"></div><div id="knob"></div></div><div id="kelvin">3800K</div></div>
     <aside id="panel">
-      <div id="pClose" data-i18n="close">ЗАКРЫТЬ ✕</div>
       <div id="pNum">01</div><h3 id="pTitle"></h3><div id="pText"></div><div id="pMeta"></div>
+      <div id="pDirs"></div>
       <a id="pOpen" class="btn" href="#" data-i18n="open">ОТКРЫТЬ ПРОЕКТ →</a>
     </aside>
   </div>
+</section>
+
+<section id="work" class="pad">
+  <div class="label" data-i18n="workLabel">03 / РАБОТЫ</div>
+  <h2 class="h2" data-i18n="workTitle">Избранные работы</h2>
+  <div id="workList"></div>
 </section>
 
 <section id="shop" class="pad">

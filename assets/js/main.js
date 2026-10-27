@@ -80,10 +80,10 @@ setTimeout(()=>$("tag").classList.add("show"),3000);
 
 // курсор растёт над всем, что кликается
 document.addEventListener("pointerover",e=>{
-  if(e.target.closest("a,button,#lang span,#pClose,#track")) dot.classList.add("big");
+  if(e.target.closest("a,button,#lang span,#track")) dot.classList.add("big");
 });
 document.addEventListener("pointerout",e=>{
-  if(e.target.closest("a,button,#lang span,#pClose,#track")) dot.classList.remove("big");
+  if(e.target.closest("a,button,#lang span,#track")) dot.classList.remove("big");
 });
 
 /* на телефоне указателя нет — фонарь дрейфует сам + реагирует на наклон */
@@ -141,16 +141,19 @@ addEventListener("deviceorientation",e=>{
 
 /* ============ страница проекта ============ */
 const caseEl=$("case"), caseScroll=$("caseScroll");
-let caseId=null, lbList=[], lbIdx=0;
+let caseId=null, caseTab=0, lbAll=[], lbList=[], lbIdx=0;
 
 function renderCase(id){
   const i=PROJECTS.findIndex(p=>p.id===id), p=PROJECTS[i], L=LANG, T=I18N[L];
   const prev=PROJECTS[(i+PROJECTS.length-1)%PROJECTS.length], next=PROJECTS[(i+1)%PROJECTS.length];
-  lbList=[];
-  const lbBtn=(n,cap,sizes)=>{lbList.push({id:p.id,n,cap});
-    return `<button type="button" data-lb="${lbList.length-1}">${imgTag(p.id,n,sizes)}</button>`;};
+  lbAll=[];
+  // grp — лайтбокс листает только внутри своего раздела / вкладки
+  const lbBtn=(n,cap,sizes,grp)=>{lbAll.push({id:p.id,n,cap,grp});
+    return `<button type="button" data-lb="${lbAll.length-1}">${imgTag(p.id,n,sizes)}</button>`;};
+  const GAL="(max-width:640px) 100vw, 33vw";
 
-  let h=`<div class="c-hero"><img src="${imgPath(p.id,p.cover)}" alt=""></div>
+  // узкая (вертикальная) обложка не растягивается на всю ширину
+  let h=`<div class="c-hero${MEDIA[p.id][p.cover-1][0]<1000?" narrow":""}"><img src="${imgPath(p.id,p.cover)}" alt=""></div>
     <div class="c-head"><div class="c-year">${p.year}</div><h1 class="c-title">${esc(p.t[L])}</h1><div class="c-sub">${esc(p.sub[L])}</div></div>
     <div class="c-grid">
       <div><div class="c-lead">${esc(p.lead[L])}</div><div class="c-body">${p.body[L].map(x=>`<p>${esc(x)}</p>`).join("")}</div></div>
@@ -158,23 +161,34 @@ function renderCase(id){
     </div>`;
 
   (p.f||[]).forEach((f,k)=>{
-    h+=`<section class="c-feat"><figure>${lbBtn(f.img,f.t[L],"(max-width:980px) 100vw, 58vw")}</figure>
+    h+=`<section class="c-feat"><figure>${lbBtn(f.img,f.t[L],"(max-width:980px) 100vw, 58vw","f")}</figure>
       <div><div class="label">${pad2(k+1)} / ${pad2(p.f.length)}</div><h3>${esc(f.t[L])}</h3><p>${esc(f.d[L])}</p></div></section>`;
   });
 
-  if(p.clip) h+=`<section class="c-sec c-clip"><div class="label"><span>${esc(p.clip.t[L])}</span></div>
-      <figure><video src="${p.clip.src}" controls muted loop playsinline preload="metadata"></video></figure></section>`;
+  (p.v||[]).forEach(v=>{
+    h+=`<section class="c-sec c-clip"><div class="label"><span>${esc(v.t[L])}</span></div>
+      <figure><video src="${v.src}" poster="${v.poster}" controls muted loop playsinline preload="none"></video></figure></section>`;
+  });
 
   if(p.anim) h+=`<section class="c-sec"><div class="label"><span>${L==="ru"?"Световые сценарии врат":"Gate light scenarios"}</span></div>
       <div class="anim">${p.anim.map(a=>`<figure><img src="${a.src}" loading="lazy" alt=""><figcaption>${esc(a.t[L])}</figcaption></figure>`).join("")}</div></section>`;
 
-  p.g.forEach(g=>{
+  (p.g||[]).forEach((g,k)=>{
     h+=`<section class="c-sec"><div class="label"><span>${esc(g.t[L])}</span><span>${pad2(g.n.length)}</span></div>
-      <div class="gal">${g.n.map(n=>lbBtn(n,g.t[L],"(max-width:640px) 100vw, 33vw")).join("")}</div></section>`;
+      <div class="gal">${g.n.map(n=>lbBtn(n,g.t[L],GAL,"g"+k)).join("")}</div></section>`;
   });
 
-  if(p.video) h+=`<section class="c-sec"><div class="label"><span>${esc(p.video[L])}</span></div>
-      <a class="btn" href="${p.video.href}" target="_blank" rel="noopener">${T.video}</a></section>`;
+  // подпапки проекта — кнопки-вкладки
+  if(p.dirs){
+    if(caseTab>=p.dirs.length) caseTab=0;
+    h+=`<section class="c-sec c-dirs" id="caseDirs"><div class="label"><span>${T.dirs}</span><span>${pad2(p.dirs.length)}</span></div>
+      <div class="tabs" role="tablist">${p.dirs.map((d,k)=>`<button type="button" role="tab" data-tab="${k}" aria-selected="${k===caseTab}">${esc(d.t[L])}<sup>${d.n.length}</sup></button>`).join("")}</div>
+      ${p.dirs.map((d,k)=>`<div class="gal" data-pane="${k}"${k===caseTab?"":" hidden"}>${d.n.map(n=>lbBtn(n,d.t[L],GAL,"d"+k)).join("")}</div>`).join("")}</section>`;
+  }
+
+  if(p.ext) h+=`<section class="c-sec"><div class="ext">${p.ext.map(e=>`
+      <a href="${e.href}" target="_blank" rel="noopener">${imgTag(p.id,e.n,"(max-width:640px) 100vw, 33vw")}
+        <span class="cap">${esc(e.t[L])}<b>${T.ext}</b></span></a>`).join("")}</div></section>`;
 
   h+=`<div class="c-foot">
       <a href="#/${prev.id}">${T.casePrev}</a>
@@ -185,10 +199,20 @@ function renderCase(id){
   $("caseNum").textContent=`${pad2(i+1)} / ${pad2(PROJECTS.length)}`;
 }
 
-function openCase(id){
+function setTab(k){
+  caseTab=k;
+  document.querySelectorAll("#caseDirs [data-tab]").forEach(b=>b.setAttribute("aria-selected",+b.dataset.tab===k));
+  document.querySelectorAll("#caseDirs [data-pane]").forEach(g=>g.hidden=+g.dataset.pane!==k);
+  history.replaceState(null,"",`#/${caseId}/${k+1}`);
+}
+function openCase(id,tab){
   const changed = id!==caseId;
-  caseId=id; renderCase(id);
+  caseId=id;
+  if(changed||tab!==undefined) caseTab=tab||0;
+  renderCase(id);
   if(changed) caseScroll.scrollTop=0;
+  // переход сразу к нужной папке (#/id/N)
+  if(tab!==undefined && $("caseDirs")) requestAnimationFrame(()=>{caseScroll.scrollTop=$("caseDirs").offsetTop-70;});
   caseEl.classList.add("open"); caseEl.setAttribute("aria-hidden","false");
   document.body.classList.add("locked");
   document.title = PROJECTS.find(p=>p.id===id).t[LANG]+" — Полухина дизайн";
@@ -202,8 +226,8 @@ function closeCase(){
   caseEl.querySelectorAll("video").forEach(v=>v.pause());
 }
 function route(){
-  const m=location.hash.match(/^#\/([\w-]+)/);
-  if(m && PROJECTS.some(p=>p.id===m[1])) openCase(m[1]); else closeCase();
+  const m=location.hash.match(/^#\/([\w-]+)(?:\/(\d+))?/);
+  if(m && PROJECTS.some(p=>p.id===m[1])) openCase(m[1], m[2]?Math.max(0,m[2]-1):undefined); else closeCase();
 }
 addEventListener("hashchange",route);
 $("caseClose").addEventListener("click",()=>{
@@ -223,7 +247,11 @@ function showLb(i){
 }
 function closeLb(){lb.classList.remove("open"); lb.setAttribute("aria-hidden","true");}
 $("caseBody").addEventListener("click",e=>{
-  const b=e.target.closest("[data-lb]"); if(b) showLb(+b.dataset.lb);
+  const t=e.target.closest("[data-tab]"); if(t){setTab(+t.dataset.tab);return;}
+  const b=e.target.closest("[data-lb]"); if(!b) return;
+  const it=lbAll[+b.dataset.lb];
+  lbList=lbAll.filter(x=>x.grp===it.grp);
+  showLb(lbList.indexOf(it));
 });
 $("lbPrev").addEventListener("click",()=>showLb(lbIdx-1));
 $("lbNext").addEventListener("click",()=>showLb(lbIdx+1));
