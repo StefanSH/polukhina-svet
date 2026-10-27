@@ -169,26 +169,6 @@ BUILD.private=h=>{
   return {pick,sway:true};
 };
 
-/* Референсы — веер вертикальных экранов с кнопкой «play» */
-BUILD.references=h=>{
-  const tri=new THREE.Shape();tri.moveTo(-.14,-.17);tri.lineTo(.2,0);tri.lineTo(-.14,.17);tri.lineTo(-.14,-.17);
-  const screens=[];
-  [-1,0,1].forEach(k=>{
-    const s=new THREE.Group(), col=k?COOL:WARM;
-    s.add(new THREE.Mesh(new THREE.PlaneGeometry(1,1.78),
-      new THREE.MeshStandardMaterial({color:0x0c0c10,emissive:col,emissiveIntensity:k?.08:.14,side:THREE.DoubleSide})));
-    s.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(1,1.78)),
-      new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.8})));
-    const play=new THREE.Mesh(new THREE.ShapeGeometry(tri),new THREE.MeshBasicMaterial({color:col,side:THREE.DoubleSide}));
-    play.position.z=.01;s.add(play);
-    s.position.set(k*.75,0,-Math.abs(k)*.35); s.rotation.y=-k*.35; s.rotation.z=-k*.06;
-    h.add(s); screens.push(s);
-  });
-  addGlow(h,WARM,4.2,.2);
-  const pick=new THREE.Mesh(new THREE.BoxGeometry(2.7,2,1.2),new THREE.MeshBasicMaterial({visible:false}));h.add(pick);
-  return {pick,screens};
-};
-
 /* ---- раскладываем объекты по кольцу ---- */
 const items=OBJ.map((o,i)=>{
   const g=new THREE.Group(), h=new THREE.Group(), a=i*STEP;

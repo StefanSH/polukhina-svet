@@ -17,7 +17,7 @@ const I18N = {
   pathLabel:"05 / ПУТЬ",expTitle:"Опыт",eduTitle:"Образование",docTitle:"Документы",
   cTitle:"06 / АВАРИЙНОЕ ОСВЕЩЕНИЕ",back:"↑ ВКЛЮЧИТЬ СВЕТ ЗАНОВО",loading:"ЗАГРУЗКА",
   caseBack:"← ВСЕ ПРОЕКТЫ",casePrev:"← ПРЕДЫДУЩИЙ",caseNext:"СЛЕДУЮЩИЙ →",
-  dirs:"ПАПКИ ПРОЕКТА",ext:"СМОТРЕТЬ НА ЯНДЕКС.ДИСКЕ ↗",resume:"СКАЧАТЬ РЕЗЮМЕ RU / EN ↓"},
+  dirs:"ПАПКИ ПРОЕКТА",resume:"СКАЧАТЬ РЕЗЮМЕ RU / EN ↓"},
  en:{brand:"POLUKHINA DESIGN",name:"ALISA<br>POLUKHINA",
   tag:"FULL-CYCLE LIGHTING & SPATIAL DESIGNER · MOSCOW / REMOTE / ASIA",
   hint:"MOVE THE CURSOR — THEN SCROLL",hintTouch:"RUN YOUR FINGER OVER THE NAME — THEN SCROLL",
@@ -32,13 +32,12 @@ const I18N = {
   pathLabel:"05 / PATH",expTitle:"Experience",eduTitle:"Education",docTitle:"Documents",
   cTitle:"06 / EMERGENCY LIGHTING",back:"↑ TURN THE LIGHT BACK ON",loading:"LOADING",
   caseBack:"← ALL PROJECTS",casePrev:"← PREVIOUS",caseNext:"NEXT →",
-  dirs:"PROJECT FOLDERS",ext:"WATCH ON YANDEX DISK ↗",resume:"DOWNLOAD CV RU / EN ↓"}
+  dirs:"PROJECT FOLDERS",resume:"DOWNLOAD CV RU / EN ↓"}
 };
 
 /* Проекты — по папкам Яндекс.Диска. Номера картинок — файлы assets/img/<id>/NN.webp.
    f — ключевые элементы (картинка + текст), v — видео, anim — анимации,
-   g — разделы галереи из корня папки, dirs — подпапки (вкладки-кнопки на странице проекта),
-   ext — файлы, которые открываются на Яндекс.Диске. */
+   g — разделы галереи из корня папки, dirs — подпапки (вкладки-кнопки на странице проекта). */
 const PROJECTS = [
  {id:"vibes",cover:2,
   t:{ru:"Hookah Place Vibes",en:"Hookah Place Vibes"},
@@ -131,8 +130,7 @@ const PROJECTS = [
   dirs:[{t:{ru:"Рендеры",en:"Renders"},n:[1,2,3,8,15,16,4,5,6,7,9,10,11,12,13,14]},
         {t:{ru:"Фото завода",en:"Mill photos"},n:[17,18,19,20,21]},
         {t:{ru:"План (без размеров)",en:"Plans (no dimensions)"},n:[22,23,24,25,26,27,28]},
-        {t:{ru:"Презентация",en:"Presentation"},n:[33,34,35,36,37,38,39,40,41,42]},
-        {t:{ru:"Референс",en:"References"},n:[29,30,31,32]}]},
+        {t:{ru:"Презентация",en:"Presentation"},n:[29,30,31,32,33,34,35,36,37,38]}]},
 
  {id:"private",cover:3,
   t:{ru:"Частные объекты",en:"Private commissions"},
@@ -156,22 +154,7 @@ const PROJECTS = [
   g:[{t:{ru:"Концепция «Выставки национального искусства России»",en:"“Exhibition of the National Art of Russia” concept"},n:[8]}],
   dirs:[{t:{ru:"Офис электроника",en:"Elektronika office"},n:[1,2,3,4,5]},
         {t:{ru:"Кухня Косинская (распил)",en:"Kosinskaya kitchen (panel cutting)"},n:[6]},
-        {t:{ru:"Обмеры ЖК Слава",en:"Slava residential complex survey"},n:[7]}]},
-
- {id:"references",cover:1,
-  t:{ru:"Референсы",en:"References"},
-  sub:{ru:"Подборка чужих решений: интерьер, хранение, свет, материалы",en:"A collection of other people's solutions: interiors, storage, light, materials"},
-  year:"2026",
-  tags:{ru:["Референсы","Интерьер"],en:["References","Interior"]},
-  meta:{ru:[["Формат","записи экрана, 3 видео"],["Источник","сохранённые публикации в Instagram"],["Где смотреть","Яндекс.Диск — файлы до 300 МБ"]],
-        en:[["Format","screen recordings, 3 videos"],["Source","saved Instagram posts"],["Where to watch","Yandex Disk — files up to 300 MB"]]},
-  lead:{ru:"Насмотренность — часть работы: идеи для интерьера, систем хранения, подсветки и отделки, которые я сохраняю и пересматриваю.",
-        en:"A trained eye is part of the job: ideas for interiors, storage, lighting and finishes that I save and revisit."},
-  body:{ru:["Это не мои проекты — записи экрана с сохранёнными видео других авторов. Ролики большие, поэтому открываются на Яндекс.Диске."],
-        en:["These are not my projects — screen recordings of saved videos by other authors. The files are large, so they open on Yandex Disk."]},
-  ext:[{n:1,href:DISK+"/референсы",t:{ru:"Запись 1 · 301 МБ",en:"Recording 1 · 301 MB"}},
-       {n:2,href:DISK+"/референсы",t:{ru:"Запись 2 · 192 МБ",en:"Recording 2 · 192 MB"}},
-       {n:3,href:DISK+"/референсы",t:{ru:"Запись 3 · 118 МБ",en:"Recording 3 · 118 MB"}}]}
+        {t:{ru:"Обмеры ЖК Слава",en:"Slava residential complex survey"},n:[7]}]}
 ];
 
 /* Карусель проектов: по одному объекту на папку Диска (порядок = порядок в карусели) */
@@ -200,12 +183,7 @@ const OBJ = [
   d:{ru:"Мебель из фанеры для офиса, кухня, обмеры, квартира под ключ и благоустройство участка 10 соток.",
      en:"Plywood office furniture, a kitchen, surveys, a full-cycle apartment and 1,000 m² of private grounds."},
   m:{ru:["2022—2026","Смета офиса — 27 000 ₽","Участок: зонирование по инсоляции"],
-     en:["2022—2026","Office budget — RUB 27,000","Grounds: zoning by solar exposure"]}},
- {p:"references",t:{ru:"Референсы",en:"References"},
-  d:{ru:"Сохранённые видео других авторов: интерьер, хранение, подсветка, материалы.",
-     en:"Saved videos by other authors: interiors, storage, lighting, materials."},
-  m:{ru:["3 записи экрана","Открываются на Яндекс.Диске"],
-     en:["3 screen recordings","Open on Yandex Disk"]}}
+     en:["2022—2026","Office budget — RUB 27,000","Grounds: zoning by solar exposure"]}}
 ];
 
 const SHOP = [

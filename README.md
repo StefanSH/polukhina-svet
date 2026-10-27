@@ -34,7 +34,7 @@ assets/video/           ролики проектов (mp4, moov в начале
    ```
 2. Пересобрать `assets/js/media.js`:
    ```
-   { echo "const MEDIA = {"; for d in vibes kolomenskoe festival balashikha private references; do printf ' %s:[' $d; magick identify -format '[%w,%h],' $(ls assets/img/$d/[0-9][0-9].webp | sort) | sed 's/,$//'; echo '],'; done; echo "};"; } > assets/js/media.js
+   { echo "const MEDIA = {"; for d in vibes kolomenskoe festival balashikha private; do printf ' %s:[' $d; magick identify -format '[%w,%h],' $(ls assets/img/$d/[0-9][0-9].webp | sort) | sed 's/,$//'; echo '],'; done; echo "};"; } > assets/js/media.js
    ```
 3. Добавить номер в нужную вкладку `dirs` (подпапка) или раздел `g` (корень папки) проекта в `assets/js/data.js`.
 

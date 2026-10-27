@@ -152,8 +152,7 @@ function renderCase(id){
     return `<button type="button" data-lb="${lbAll.length-1}">${imgTag(p.id,n,sizes)}</button>`;};
   const GAL="(max-width:640px) 100vw, 33vw";
 
-  // узкая (вертикальная) обложка не растягивается на всю ширину
-  let h=`<div class="c-hero${MEDIA[p.id][p.cover-1][0]<1000?" narrow":""}"><img src="${imgPath(p.id,p.cover)}" alt=""></div>
+  let h=`<div class="c-hero"><img src="${imgPath(p.id,p.cover)}" alt=""></div>
     <div class="c-head"><div class="c-year">${p.year}</div><h1 class="c-title">${esc(p.t[L])}</h1><div class="c-sub">${esc(p.sub[L])}</div></div>
     <div class="c-grid">
       <div><div class="c-lead">${esc(p.lead[L])}</div><div class="c-body">${p.body[L].map(x=>`<p>${esc(x)}</p>`).join("")}</div></div>
@@ -186,9 +185,6 @@ function renderCase(id){
       ${p.dirs.map((d,k)=>`<div class="gal" data-pane="${k}"${k===caseTab?"":" hidden"}>${d.n.map(n=>lbBtn(n,d.t[L],GAL,"d"+k)).join("")}</div>`).join("")}</section>`;
   }
 
-  if(p.ext) h+=`<section class="c-sec"><div class="ext">${p.ext.map(e=>`
-      <a href="${e.href}" target="_blank" rel="noopener">${imgTag(p.id,e.n,"(max-width:640px) 100vw, 33vw")}
-        <span class="cap">${esc(e.t[L])}<b>${T.ext}</b></span></a>`).join("")}</div></section>`;
 
   h+=`<div class="c-foot">
       <a href="#/${prev.id}">${T.casePrev}</a>
